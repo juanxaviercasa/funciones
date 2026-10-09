@@ -1,0 +1,17 @@
+node_modules/
+dist/
+dist-offline/
+coverage/
+test-results/
+playwright-report/
+.env
+.env.local
+*.log
+.audit-artifacts/
+public/katex.css
+public/katex-fonts/
+public/mathlive-fonts/
+public/licenses/
+/NUL.css
+/powershell.cmd
+supabase/.temp/
