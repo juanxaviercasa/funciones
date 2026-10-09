@@ -29,7 +29,7 @@ export default defineConfig({
       workbox: {
         clientsClaim: true,
         cleanupOutdatedCaches: true,
-        globPatterns: ["**/*.{js,css,html,svg,woff2}"],
+        globPatterns: ["**/*.{js,css,html,svg,woff2,webp}"],
         maximumFileSizeToCacheInBytes: 4_000_000,
         navigateFallback: "index.html",
       },

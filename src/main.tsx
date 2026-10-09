@@ -6,6 +6,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { PreferencesProvider } from "./preferences";
 import "../styles.css";
 import "./styles/enhancements.css";
+import "./styles/landing.css";
 import { registerSW } from "virtual:pwa-register";
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },

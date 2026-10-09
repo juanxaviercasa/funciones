@@ -10,22 +10,39 @@ test.beforeEach(async ({ page }, info) => {
 
 test("entry offers cloud and local progress before learning", async ({
   page,
-}) => {
+}, info) => {
   await page.goto("/");
   await expect(
     page.getByRole("heading", {
-      name: "¿Cómo quieres guardar tu aprendizaje?",
+      name: /Las funciones tienen sentido/,
     }),
   ).toBeVisible();
+  await expect(page.locator(".landing-art img")).toBeVisible();
+  await page.screenshot({
+    path: `.audit-artifacts/landing-${info.project.name}.png`,
+    fullPage: true,
+  });
   await expect(
     page.getByText("Tus avances se guardan solo en este navegador.", {
       exact: false,
     }),
   ).toBeVisible();
+  await page.getByLabel("Desplazamiento vertical").focus();
+  await page.keyboard.press("Home");
+  for (let i = 0; i < 5; i++) await page.keyboard.press("ArrowRight");
+  await expect(page.getByText("f(x) = x + 2", { exact: true })).toBeVisible();
+  expect(
+    (
+      await new AxeBuilder({ page })
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+        .analyze()
+    ).violations,
+  ).toEqual([]);
   await page.getByRole("button", { name: "Crear cuenta gratuita" }).click();
   await expect(page.getByLabel("Confirmar contraseña")).toBeVisible();
   await page
     .getByRole("button", { name: "Continuar en este dispositivo" })
+    .last()
     .click();
   await expect(
     page.getByRole("heading", { name: /Domina funciones/ }),
