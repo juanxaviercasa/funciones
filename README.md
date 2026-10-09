@@ -2,6 +2,8 @@
 
 Aplicación educativa en español, local-first, para aprender funciones con lecciones, gráficas manipulables y práctica adaptativa. Implementación de las fases de mejora en [docs/IMPLEMENTACION.md](docs/IMPLEMENTACION.md).
 
+Sitio provisional: [funciones-6zh.pages.dev](https://funciones-6zh.pages.dev/)
+
 ## Ejecutar
 
 Requiere Node.js 22.12 o superior. En Windows se puede usar `npm.cmd`.
@@ -62,7 +64,7 @@ En **Settings > Environment variables**, añade `VITE_SUPABASE_URL` y `VITE_SUPA
 5. Pulsa **Combinar y sincronizar** para transferir explícitamente el progreso local a esa cuenta. No hay cargas automáticas ni sincronización remota offline.
 6. Antes de usar datos reales, verifica en tu proyecto que dos cuentas no pueden leer ni modificar el progreso de la otra y que una sesión anónima no tiene acceso. Prueba conflicto de revisiones desde dos dispositivos.
 
-Estado del entorno actual: URL y clave publicable configuradas localmente; migraciones `20261008000000` y `20261008000001` aplicadas al proyecto remoto. La tabla, Auth y el rechazo de lectura/escritura anónima se verificaron el 8 de octubre de 2026. Falta añadir el dominio definitivo a Site URL/redirect URLs y completar la prueba cruzada con dos cuentas reales.
+Estado del entorno actual: URL y clave publicable configuradas localmente y en Cloudflare Pages; migraciones `20261008000000` y `20261008000001` aplicadas al proyecto remoto. La tabla, Auth y el rechazo de lectura/escritura anónima se verificaron el 8 de octubre de 2026. El despliegue provisional pasó la comprobación de navegación, cuenta, PWA, consola y solicitudes. Falta autorizar su URL en Supabase Auth, añadir el dominio definitivo cuando esté disponible y completar la prueba cruzada con dos cuentas reales.
 
 El modo local no requiere cuenta. En dispositivos compartidos usa perfiles de navegador separados: cerrar sesión **no borra** el progreso local. Reiniciar datos borra solo los datos de aprendizaje/preferencias locales; no borra la cuenta ni el respaldo remoto, y una sincronización posterior podría recuperarlo.
 
