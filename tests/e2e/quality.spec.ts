@@ -1,5 +1,40 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+test.beforeEach(async ({ page }, info) => {
+  if (info.title !== "entry offers cloud and local progress before learning") {
+    await page.addInitScript(() =>
+      sessionStorage.setItem("funciones-entry", "local"),
+    );
+  }
+});
+
+test("entry offers cloud and local progress before learning", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", {
+      name: "¿Cómo quieres guardar tu aprendizaje?",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Tus avances se guardan solo en este navegador.", {
+      exact: false,
+    }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Crear cuenta gratuita" }).click();
+  await expect(page.getByLabel("Confirmar contraseña")).toBeVisible();
+  await page
+    .getByRole("button", { name: "Continuar en este dispositivo" })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: /Domina funciones/ }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: /Domina funciones/ }),
+  ).toBeVisible();
+});
 test("deep links, keyboard navigation and core accessibility", async ({
   page,
 }) => {

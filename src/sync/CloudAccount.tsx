@@ -24,12 +24,16 @@ const emptyProfile: Profile = {
 export function CloudAccount({
   progress,
   setProgress,
+  onContinue,
+  initialMode = "login",
 }: {
   progress: Progress;
   setProgress: React.Dispatch<React.SetStateAction<Progress>>;
+  onContinue?: () => void;
+  initialMode?: AuthMode;
 }) {
   const [session, setSession] = useState<Session | null>(null);
-  const [mode, setMode] = useState<AuthMode>("login");
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [recovery, setRecovery] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -183,7 +187,7 @@ export function CloudAccount({
             Modo local activo. Para habilitar la nube, configura Supabase
             siguiendo README.md. No se envía ningún dato.
           </p>
-        ) : session ? (
+        ) : session && !recovery ? (
           <>
             <p>
               Cuenta: {session.user.email}. Tu progreso continúa guardándose en
@@ -195,6 +199,22 @@ export function CloudAccount({
               herramienta. No registramos esta actividad sin una cuenta.
             </p>
             <div className="account-actions">
+              {onContinue && (
+                <button
+                  className="primary"
+                  disabled={sync.isPending}
+                  onClick={async () => {
+                    try {
+                      await sync.mutateAsync();
+                      onContinue();
+                    } catch {
+                      /* The sync status explains the failure. */
+                    }
+                  }}
+                >
+                  Continuar y respaldar mi progreso
+                </button>
+              )}
               <button
                 className="primary"
                 data-analytics="sync-progress"
@@ -399,8 +419,8 @@ export function CloudAccount({
           {sync.isPending && " Sincronizando…"}
         </p>
       </section>
-      <AdminDashboard session={session} />
-      <Plans session={session} />
+      {!onContinue && <AdminDashboard session={session} />}
+      {!onContinue && <Plans session={session} />}
     </>
   );
 }

@@ -1,6 +1,9 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useRoute, type Screen } from "./routing";
 import { useProductAnalytics } from "./sync/analytics";
+import { EntryScreen } from "./sync/EntryScreen";
+import { supabase } from "./sync/supabaseClient";
+import { useCloudBackup } from "./sync/useCloudBackup";
 const CloudAccount = lazy(() =>
   import("./sync/CloudAccount").then((m) => ({ default: m.CloudAccount })),
 );
@@ -55,6 +58,40 @@ export default function App() {
     loadPreferences(getBrowserStorage()),
   );
   const [progress, setProgress] = useProgressStore(progressLoad.value);
+  const [entry, setEntry] = useState<"checking" | "choose" | "ready">(
+    "checking",
+  );
+  const backupStatus = useCloudBackup(progress, setProgress, entry === "ready");
+  useEffect(() => {
+    let active = true;
+    const check = async () => {
+      const session = supabase
+        ? (await supabase.auth.getSession()).data.session
+        : null;
+      let local = false;
+      try {
+        local = sessionStorage.getItem("funciones-entry") === "local";
+      } catch {
+        /* The choice can still live in memory. */
+      }
+      if (active) setEntry(session || local ? "ready" : "choose");
+    };
+    void check();
+    const listener = supabase?.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") {
+        try {
+          sessionStorage.removeItem("funciones-entry");
+        } catch {
+          /* Optional storage. */
+        }
+        setEntry("choose");
+      }
+    });
+    return () => {
+      active = false;
+      listener?.data.subscription.unsubscribe();
+    };
+  }, []);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
@@ -148,6 +185,28 @@ export default function App() {
     clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(""), 4500);
   };
+  if (entry === "checking")
+    return (
+      <main className="entry-screen">
+        <p role="status">Preparando tu aprendizaje…</p>
+      </main>
+    );
+  if (entry === "choose")
+    return (
+      <EntryScreen
+        progress={progress}
+        setProgress={setProgress}
+        onLocal={() => {
+          try {
+            sessionStorage.setItem("funciones-entry", "local");
+          } catch {
+            /* In-memory choice remains usable. */
+          }
+          setEntry("ready");
+        }}
+        onAccount={() => setEntry("ready")}
+      />
+    );
   return (
     <div className="app">
       <a
@@ -197,10 +256,18 @@ export default function App() {
           <b>
             <SettingsIcon size={22} />
           </b>
-          <span>Ajustes</span>
+          <span>Cuenta y ajustes</span>
         </button>
       </aside>
       <main id="main-content" tabIndex={-1}>
+        <div className="backup-status">
+          <span role="status">
+            {backupStatus || "Progreso guardado en este navegador"}
+          </span>
+          <button className="text-button" onClick={() => go("ajustes")}>
+            Mi cuenta
+          </button>
+        </div>
         <TopBar progress={progress} dark={dark} setDark={setDark} />
         <Suspense
           fallback={

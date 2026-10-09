@@ -61,7 +61,7 @@ En **Settings > Environment variables**, añade `VITE_SUPABASE_URL` y `VITE_SUPA
 2. Copia `.env.example` a `.env.local` y configura la URL y clave **publishable/pública**. Nunca uses `service_role` ni secretos de servidor en variables `VITE_*`.
 3. En Auth, habilita correo y configura Site URL y redirect URLs con el origen/ruta reales; para desarrollo, `http://127.0.0.1:4173/`.
 4. Reinicia el servidor o reconstruye la aplicación. En Ajustes crea una cuenta con correo y contraseña; la confirmación del correo se solicita una vez. El acceso posterior usa la contraseña y **¿Olvidaste tu contraseña?** envía el enlace de recuperación.
-5. Pulsa **Combinar y sincronizar** para transferir explícitamente el progreso local a esa cuenta. No hay cargas automáticas ni sincronización remota offline.
+5. La pantalla inicial ofrece cuenta o modo local. Al continuar con cuenta, el progreso se respalda automáticamente mientras hay conexión; sin conexión permanece en el navegador y se reintenta después. **Combinar y sincronizar** permite forzar la conciliación desde Cuenta.
 6. Antes de usar datos reales, verifica en tu proyecto que dos cuentas no pueden leer ni modificar el progreso de la otra y que una sesión anónima no tiene acceso. Prueba conflicto de revisiones desde dos dispositivos.
 
 Estado del entorno actual: URL y clave publicable configuradas localmente y en Cloudflare Pages. Supabase Auth, la tabla de progreso, perfiles y planes están activos. Las tablas privadas rechazan acceso anónimo y la analítica se acepta exclusivamente para usuarios autenticados. Las URL de producción, Pages y desarrollo están autorizadas en Auth. Falta completar la prueba cruzada con dos cuentas reales y designar la cuenta administradora.

@@ -1,4 +1,9 @@
 import { expect, test } from "@playwright/test";
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() =>
+    sessionStorage.setItem("funciones-entry", "local"),
+  );
+});
 
 async function startFresh(page: import("@playwright/test").Page) {
   // Each Playwright test starts with a fresh context; don't race a reload with lazy imports.

@@ -1,4 +1,9 @@
 import { test, expect } from "@playwright/test";
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() =>
+    sessionStorage.setItem("funciones-entry", "local"),
+  );
+});
 test("production PWA reloads and loads the math editor without network", async ({
   page,
   context,
