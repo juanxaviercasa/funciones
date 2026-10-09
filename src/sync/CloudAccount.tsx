@@ -58,7 +58,7 @@ export function CloudAccount({
   });
   return (
     <section className="page narrow">
-      <h2>Cuenta y respaldo en la nube</h2>
+      <h2>Respaldo opcional en la nube</h2>
       {!client ? (
         <p>
           Modo local activo. Para habilitar la nube, configura Supabase
@@ -67,8 +67,11 @@ export function CloudAccount({
       ) : session ? (
         <>
           <p>
-            Cuenta: {session.user.email}. Este navegador conserva su progreso
-            local al cerrar sesión.
+            Sesión de respaldo: {session.user.email}. Tu progreso continúa
+            guardándose en este navegador aunque cierres sesión.
+          </p>
+          <p>
+            La transferencia solo ocurre cuando eliges combinar y sincronizar.
           </p>
           <button
             className="primary"
@@ -96,33 +99,45 @@ export function CloudAccount({
           </button>
         </>
       ) : (
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            const { error } = await client.auth.signInWithOtp({
-              email,
-              options: {
-                emailRedirectTo:
-                  window.location.origin + window.location.pathname,
-              },
-            });
-            setMessage(
-              error?.message ?? "Revisa tu correo para iniciar sesión.",
-            );
-          }}
-        >
-          <label>
-            Correo electrónico{" "}
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-            />
-          </label>
-          <button className="primary">Enviar enlace de acceso</button>
-        </form>
+        <>
+          <p>
+            Tu progreso ya se guarda gratis en este dispositivo. Inicia sesión
+            solo si quieres recuperarlo al cambiar de navegador o sincronizarlo
+            entre dispositivos.
+          </p>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const { error } = await client.auth.signInWithOtp({
+                email,
+                options: {
+                  emailRedirectTo:
+                    window.location.origin + window.location.pathname,
+                },
+              });
+              setMessage(
+                error?.message ??
+                  "Revisa tu correo para abrir el enlace de respaldo.",
+              );
+            }}
+          >
+            <label>
+              Correo para el respaldo{" "}
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </label>
+            <button className="primary">Enviar enlace de respaldo</button>
+          </form>
+          <p className="muted">
+            Es opcional y no requiere contraseña. Nada se sube hasta que
+            confirmes la sincronización.
+          </p>
+        </>
       )}
       <p role="status">
         {message}
