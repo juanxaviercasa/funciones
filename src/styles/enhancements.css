@@ -69,6 +69,165 @@ math-field {
   transition-duration: 0s !important;
   scroll-behavior: auto !important;
 }
+.account-page,
+.pricing-page {
+  margin-bottom: 1.5rem;
+}
+.account-actions,
+.auth-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.auth-tabs button {
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--text);
+  padding: 0.65rem 0.25rem;
+  font-weight: 700;
+}
+.auth-tabs button[aria-pressed="true"] {
+  border-bottom-color: var(--primary);
+  color: var(--primary);
+}
+.auth-form,
+.profile-form,
+.waitlist-panel {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid #8884;
+  border-radius: 18px;
+  background: var(--surface);
+}
+.auth-form label,
+.profile-form label,
+.waitlist-panel label {
+  display: grid;
+  gap: 0.4rem;
+  font-weight: 650;
+}
+.auth-form input,
+.profile-form input,
+.profile-form select,
+.profile-form textarea,
+.waitlist-panel input[type="email"] {
+  width: 100%;
+  min-height: 2.8rem;
+  padding: 0.7rem;
+  border: 1px solid #8888;
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+.profile-form textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+.text-button {
+  justify-self: start;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  text-decoration: underline;
+}
+.section-heading {
+  max-width: 720px;
+  margin-bottom: 1.25rem;
+}
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.plan-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding: 1.3rem;
+  border: 1px solid #8884;
+  border-radius: 20px;
+  background: var(--surface);
+}
+.plan-card.featured {
+  border: 2px solid var(--primary);
+}
+.plan-card ul {
+  flex: 1;
+  padding-left: 1.25rem;
+}
+.plan-card small {
+  text-align: center;
+}
+.plan-price {
+  color: var(--primary);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+.plan-badge {
+  align-self: flex-start;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+.waitlist-panel {
+  max-width: 720px;
+  margin: 1.25rem auto 0;
+}
+.consent-row {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  font-weight: 500 !important;
+}
+.consent-row input {
+  margin-top: 0.2rem;
+}
+.admin-dashboard {
+  margin-bottom: 1.5rem;
+}
+.admin-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.admin-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+.admin-metrics article,
+.admin-card {
+  padding: 1.1rem;
+  border: 1px solid #8884;
+  border-radius: 16px;
+  background: var(--surface);
+}
+.admin-metrics strong,
+.admin-metrics span {
+  display: block;
+}
+.admin-metrics strong {
+  color: var(--primary);
+  font-size: 1.8rem;
+}
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.admin-card {
+  margin: 1rem 0;
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -79,6 +238,16 @@ math-field {
   }
 }
 @media (max-width: 760px) {
+  .admin-heading {
+    display: block;
+  }
+  .admin-metrics,
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
   .sidebar nav {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }

@@ -56,3 +56,39 @@ test("math input loads local fonts and accepts a numeric answer", async ({
   ).toBeEnabled();
   expect(errors).toEqual([]);
 });
+
+test("account access stays optional and future plans are understandable", async ({
+  page,
+}) => {
+  await page.goto("/#/ajustes");
+  await expect(
+    page.getByRole("heading", { name: "Cuenta y respaldo opcional" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("La aplicación funciona sin cuenta", { exact: false }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "¿Olvidaste tu contraseña?" }),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Crear cuenta" }).click();
+  await expect(page.getByLabel("Confirmar contraseña")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Crear cuenta gratuita" }),
+  ).toBeVisible();
+
+  await expect(
+    page.getByRole("heading", { name: "Elige cómo quieres aprender" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Plan disponible" }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Me interesa Pro" }),
+  ).toBeEnabled();
+  const results = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  expect(results.violations).toEqual([]);
+});

@@ -57,24 +57,38 @@ En **Settings > Environment variables**, añade `VITE_SUPABASE_URL` y `VITE_SUPA
 
 ## Activar Supabase
 
-1. Crea un proyecto Supabase y ejecuta **una vez** `supabase/schema.sql` en su editor SQL.
+1. Crea un proyecto Supabase y aplica, en orden, los archivos de `supabase/migrations/`. En un entorno enlazado usa `supabase db push`; `supabase/schema.sql` conserva únicamente la base histórica inicial.
 2. Copia `.env.example` a `.env.local` y configura la URL y clave **publishable/pública**. Nunca uses `service_role` ni secretos de servidor en variables `VITE_*`.
 3. En Auth, habilita correo y configura Site URL y redirect URLs con el origen/ruta reales; para desarrollo, `http://127.0.0.1:4173/`.
-4. Reinicia el servidor o reconstruye la aplicación. En Ajustes solicita un enlace de acceso y ábrelo en el mismo navegador/perfil que inició el flujo PKCE. Si vuelves a Inicio, abre Ajustes para terminar el acceso.
+4. Reinicia el servidor o reconstruye la aplicación. En Ajustes crea una cuenta con correo y contraseña; la confirmación del correo se solicita una vez. El acceso posterior usa la contraseña y **¿Olvidaste tu contraseña?** envía el enlace de recuperación.
 5. Pulsa **Combinar y sincronizar** para transferir explícitamente el progreso local a esa cuenta. No hay cargas automáticas ni sincronización remota offline.
 6. Antes de usar datos reales, verifica en tu proyecto que dos cuentas no pueden leer ni modificar el progreso de la otra y que una sesión anónima no tiene acceso. Prueba conflicto de revisiones desde dos dispositivos.
 
-Estado del entorno actual: URL y clave publicable configuradas localmente y en Cloudflare Pages; migraciones `20261008000000` y `20261008000001` aplicadas al proyecto remoto. La tabla, Auth y el rechazo de lectura/escritura anónima se verificaron el 8 de octubre de 2026. El dominio definitivo pasó la comprobación de HTTPS, navegación, cuenta, PWA, consola y solicitudes. Falta autorizar `https://funciones.sistemazenit.com/` en Supabase Auth y completar la prueba cruzada con dos cuentas reales.
+Estado del entorno actual: URL y clave publicable configuradas localmente y en Cloudflare Pages. Supabase Auth, la tabla de progreso, perfiles y planes están activos. Las tablas privadas rechazan acceso anónimo y la analítica se acepta exclusivamente para usuarios autenticados. Las URL de producción, Pages y desarrollo están autorizadas en Auth. Falta completar la prueba cruzada con dos cuentas reales y designar la cuenta administradora.
+
+## Interés en planes futuros
+
+Los botones **Me interesa** solo registran actividad cuando existe una sesión. La lista de espera requiere consentimiento y usa el correo confirmado de la cuenta; no acepta correos anónimos, procesa pagos ni promete precios. La demanda se consulta desde el panel privado del administrador.
+
+Para designar la única cuenta administradora, primero crea y confirma esa cuenta y luego ejecuta una vez en el editor SQL, sustituyendo el correo:
+
+```sql
+insert into public.app_admin (user_id)
+select id from auth.users where email = 'ADMIN_EMAIL'
+on conflict (singleton) do update set user_id = excluded.user_id;
+```
+
+La restricción `singleton` impide tener más de un administrador. Los correos y agregados administrativos no se exponen a usuarios normales. Antes de enviar campañas será necesario definir política de privacidad, mecanismo de baja y proveedor de correo.
 
 El modo local no requiere cuenta. En dispositivos compartidos usa perfiles de navegador separados: cerrar sesión **no borra** el progreso local. Reiniciar datos borra solo los datos de aprendizaje/preferencias locales; no borra la cuenta ni el respaldo remoto, y una sincronización posterior podría recuperarlo.
 
 ## Arquitectura
 
-`src/App.tsx` compone pantallas cargadas bajo demanda; `src/routing.ts` resuelve rutas; `src/exercises.ts`, `src/adaptive.ts` y `src/learning.ts` contienen pedagogía y evidencia; `src/math.ts` contiene matemática pura. `src/persistence.ts`, `src/schemas.ts` y `src/useProgressStore.ts` gestionan persistencia. `src/sync/` separa fusión, protocolo de conflictos y cuenta. `src/components/` contiene elementos interactivos; `src/preferences.tsx` hace efectivas las preferencias. Vite, Vitest y Playwright tienen configuraciones independientes.
+`src/App.tsx` compone pantallas cargadas bajo demanda; `src/routing.ts` resuelve rutas; `src/exercises.ts`, `src/adaptive.ts` y `src/learning.ts` contienen pedagogía y evidencia; `src/math.ts` contiene matemática pura. `src/persistence.ts`, `src/schemas.ts` y `src/useProgressStore.ts` gestionan persistencia. `src/sync/` separa fusión, protocolo de conflictos, autenticación, perfil y planes. `src/components/` contiene elementos interactivos; `src/preferences.tsx` hace efectivas las preferencias. Vite, Vitest y Playwright tienen configuraciones independientes.
 
 ## Producción, privacidad y límites
 
-Sirve **solo `dist/`** sobre HTTPS; no publiques `.env.local`, código de configuración interno ni `node_modules`. No necesitas rewrites especiales para las rutas hash. Configura en tu alojamiento CSP y otras cabeceras de seguridad según las URL reales de Supabase y las necesidades de MathLive; valida antes de imponer políticas restrictivas. No se instalaron analítica externa ni rastreadores adicionales.
+Sirve **solo `dist/`** sobre HTTPS; no publiques `.env.local`, código de configuración interno ni `node_modules`. No necesitas rewrites especiales para las rutas hash. Configura en tu alojamiento CSP y otras cabeceras de seguridad según las URL reales de Supabase y las necesidades de MathLive; valida antes de imponer políticas restrictivas. No se instalaron analítica externa ni rastreadores de visitantes anónimos. La analítica propia registra únicamente actividad de cuentas autenticadas en Supabase y debe explicarse en la política de privacidad antes de promocionar el servicio.
 
 El dominio es una estimación, no una nota oficial. Los XP y respaldos son modificables por el usuario: esta aplicación no es una plataforma de exámenes con validación de servidor. Los datos heredados sin eventos se fusionan conservando máximos, y el tiempo de estudio de un mismo día usa el máximo para evitar duplicaciones; no pretende medir tiempo único exacto entre dispositivos. Se conservan 2.000 eventos y 90 días de sesiones. La reanudación en `sessionStorage` no es una transacción atómica con el progreso; un cierre abrupto durante una escritura puede perder el último cambio.
 

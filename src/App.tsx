@@ -1,5 +1,6 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useRoute, type Screen } from "./routing";
+import { useProductAnalytics } from "./sync/analytics";
 const CloudAccount = lazy(() =>
   import("./sync/CloudAccount").then((m) => ({ default: m.CloudAccount })),
 );
@@ -48,6 +49,7 @@ const nextLesson = (progress: Progress): Lesson | null =>
   recommendedLesson(lessons, progress);
 export default function App() {
   const { screen, lessonId, navigate } = useRoute();
+  useProductAnalytics(screen === "leccion" ? `leccion/${lessonId}` : screen);
   const [progressLoad] = useState(() => loadProgress(getBrowserStorage()));
   const [preferencesLoad] = useState(() =>
     loadPreferences(getBrowserStorage()),
